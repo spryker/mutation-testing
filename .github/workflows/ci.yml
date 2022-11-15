@@ -53,9 +53,6 @@ jobs:
             - name: Run PHPStan
               run: composer stan
 
-            - name: Run CodeStyle checks
-              run: composer cs-check
-
             - name: Run Mutation Tests
               run: composer test
 
@@ -66,3 +63,6 @@ jobs:
               uses: codecov/codecov-action@v3
               with:
                   file: ./tests/output/clover.xml
+
+            - name: Run CodeStyle checks
+              run: composer cs-check

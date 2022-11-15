@@ -1,0 +1,68 @@
+name: CI
+
+on:
+    pull_request:
+    push:
+        branches:
+            - master
+    workflow_dispatch:
+
+jobs:
+    validation:
+        name: "CS, PHPStan, Security"
+        runs-on: ubuntu-20.04
+        env:
+            APPLICATION_ENV: testing
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: [
+                    '8.1'
+                ]
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: mbstring, intl, pdo_mysql, redis
+                  tools: composer:v2
+
+            - name: Composer get cache directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+            - name: Composer cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
+
+            - name: Composer validate
+              run: composer validate
+
+            - name: Composer version
+              run: composer --version
+
+            - name: Composer install
+              run: composer install --optimize-autoloader
+
+            - name: Run PHPStan
+              run: composer stan
+
+            - name: Run CodeStyle checks
+              run: composer cs-check
+
+            - name: Run Mutation Tests
+              run: composer test
+
+            - name: Run PHPUnit with path coverage enabled
+              run: composer test-cover
+
+            - name: Code Coverage Report
+              uses: codecov/codecov-action@v3
+              with:
+                  file: ./tests/output/clover.xml

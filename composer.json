@@ -1,0 +1,35 @@
+{
+    "name": "spryker/mutation-testing",
+    "description": "Playground repository for Mutation Testing",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "MutationTesting\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "stereomon",
+            "email": "rene.klatt@spryker.com"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "require-dev": {
+        "infection/infection": "^0.26.16",
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^1.9",
+        "spryker/code-sniffer": "^0.17.14"
+    },
+    "scripts": {
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "stan": "phpstan analyze -l 8 src/ tests/",
+        "test": "vendor/bin/infection --threads=max --min-msi=100 --min-covered-msi=100",
+        "test-cover": "phpunit --coverage-xml tests/output --path-coverage"
+    }
+}

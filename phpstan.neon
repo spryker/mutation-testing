@@ -1,0 +1,8 @@
+parameters:
+    level: 8
+    checkMissingIterableValueType: false
+
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+
+    reportUnmatchedIgnoredErrors: false
